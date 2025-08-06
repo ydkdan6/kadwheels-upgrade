@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "bolt-expo-nativewind",
-    "slug": "bolt-expo-nativewind",
+    "name": "KadWheels",
+    "slug": "KadWheels",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -19,11 +19,19 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-web-browser",
-      "expo-barcode-scanner"
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2fe21adf-fb39-4875-bdfb-c826af5cbc8c"
+      }
+    },
+    "android": {
+      "package": "com.dannycodess.KadWheels"
     }
   }
 }

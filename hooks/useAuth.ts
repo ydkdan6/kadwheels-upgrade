@@ -32,8 +32,34 @@ export function useAuth() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState<any>(null);
 
+  // Function to send welcome notification
+  const sendWelcomeNotification = async (userId: string, fullName: string) => {
+    try {
+      console.log('Sending welcome notification to:', userId, fullName);
+      
+      // const { data, error } = await supabase
+      //   .rpc('send_welcome_notification', {
+      //     user_id: userId,
+      //     user_name: fullName || 'Student'
+      //   });
+
+      if (error) {
+        console.warn('Failed to send welcome notification:', error);
+        // Don't throw error - notification failure shouldn't break signup
+        return null;
+      }
+
+      console.log('Welcome notification sent successfully:', data);
+      return data;
+    } catch (error) {
+      console.warn('Error sending welcome notification:', error);
+      // Don't throw error - notification failure shouldn't break signup
+      return null;
+    }
+  };
+
   // Function to safely create or update profile
-  const createOrUpdateProfile = async (userId: string, email: string, fullName: string) => {
+  const createOrUpdateProfile = async (userId: string, email: string, fullName: string, sendNotification: boolean = false) => {
     try {
       // First, try to get existing profile
       const { data: existingProfile, error: fetchError } = await supabase
@@ -103,6 +129,11 @@ export function useAuth() {
           throw insertError;
         }
 
+        // Send welcome notification for new profiles only
+        if (newProfile && sendNotification) {
+          await sendWelcomeNotification(userId, fullName);
+        }
+
         return newProfile;
       }
     } catch (error) {
@@ -165,6 +196,18 @@ export function useAuth() {
       if (error) {
         console.error('Error promoting user to admin:', error);
         return false;
+      }
+
+      // Send admin promotion notification
+      try {
+        await supabase.rpc('send_notification_to_users', {
+          p_title: 'Admin Access Granted! 👑',
+          p_message: 'You now have administrator privileges. Welcome to the admin panel!',
+          p_type: 'success',
+          p_target_users: [userId]
+        });
+      } catch (notificationError) {
+        console.warn('Failed to send admin promotion notification:', notificationError);
       }
 
       return true;
@@ -271,8 +314,12 @@ export function useAuth() {
       // Only create profile if user was successfully created
       if (data.user && data.user.id) {
         try {
-          await createOrUpdateProfile(data.user.id, data.user.email!, fullName);
-          console.log('Profile created/updated successfully');
+          // Pass sendNotification: true for new signups
+          const profile = await createOrUpdateProfile(data.user.id, data.user.email!, fullName, true);
+          console.log('Profile created/updated successfully:', profile);
+          
+          // Update local state with new profile
+          setProfile(profile);
         } catch (profileError) {
           console.error('Profile creation/update failed:', profileError);
           // Don't fail the signup if profile creation fails
@@ -300,14 +347,20 @@ export function useAuth() {
           const { isAdmin: adminStatus, profile: userProfile } = await checkUserProfile(result.data.user.id);
           
           if (!userProfile) {
-            // Create profile if it doesn't exist
+            // Create profile if it doesn't exist (don't send notification for existing users)
             console.log('Creating missing profile for existing user');
-            await createOrUpdateProfile(
+            const profile = await createOrUpdateProfile(
               result.data.user.id, 
               result.data.user.email!, 
-              result.data.user.user_metadata?.full_name || 'User'
+              result.data.user.user_metadata?.full_name || 'User',
+              false // Don't send notification for existing users
             );
+            setProfile(profile);
+          } else {
+            setProfile(userProfile);
           }
+          
+          setIsAdmin(adminStatus);
         } catch (profileError) {
           console.error('Profile check/creation failed during sign in:', profileError);
         }
@@ -351,11 +404,15 @@ export function useAuth() {
           if (!userProfile) {
             // Create profile if it doesn't exist
             console.log('Creating missing profile for admin user');
-            await createOrUpdateProfile(
+            const profile = await createOrUpdateProfile(
               result.data.user.id, 
               result.data.user.email!, 
-              result.data.user.user_metadata?.full_name || 'Admin User'
+              result.data.user.user_metadata?.full_name || 'Admin User',
+              false // Don't send welcome notification for admin users
             );
+            setProfile(profile);
+          } else {
+            setProfile(userProfile);
           }
 
           if (!currentAdminStatus) {
@@ -441,13 +498,38 @@ export function useAuth() {
     return false;
   };
 
+  // Function to send custom notification (useful for admin features)
+  const sendNotification = async (title: string, message: string, targetUsers?: string[], type: string = 'info') => {
+    try {
+      const { data, error } = await supabase.rpc('send_notification_to_users', {
+        p_title: title,
+        p_message: message,
+        p_type: type,
+        p_target_users: targetUsers || null,
+        p_route_id: null,
+        p_bus_id: null,
+        p_sent_by: user?.id || null
+      });
+
+      if (error) {
+        console.error('Error sending notification:', error);
+        return { success: false, error };
+      }
+
+      return { success: true, data };
+    } catch (error) {
+      console.error('Error in sendNotification:', error);
+      return { success: false, error };
+    }
+  };
+
   // Navigation helper functions
   const navigateToAdmin = () => {
     try {
       router.push('/admin');
     } catch (error) {
       console.log('Navigation to /admin failed, trying alternative');
-      router.push('/(tab)/admin');
+      // router.push('/(tab)/admin');
     }
   };
 
@@ -465,6 +547,7 @@ export function useAuth() {
     signInAdmin,
     signOut,
     refreshAdminStatus,
+    sendNotification,
     navigateToAdmin,
     navigateToHome,
   };

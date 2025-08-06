@@ -81,23 +81,42 @@ export default function HomeScreen() {
   const fetchNotifications = async () => {
   try {
     const { data, error } = await supabase
-      .from('notifications')
+      .from('user_notifications') // Use the view for better performance
       .select('*')
       .or(`target_users.cs.{${user.id}},target_users.is.null`)
-      .order('sent_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(10);
 
     if (error) throw error;
+    setNotifications(data || []);
     
-    // Filter notifications that are either targeted to this user or are broadcast (null target_users)
-    const userNotifications = data.filter(notification => 
-      !notification.target_users || notification.target_users.includes(user.id)
-    );
+    // Get unread count
+    const { data: unreadCount } = await supabase
+      .rpc('get_unread_notification_count', { user_id: user.id });
     
-    setNotifications(userNotifications);
+    // Update your notification badge with unreadCount
+    
   } catch (error) {
     console.error('Error fetching notifications:', error);
   }
 };
+
+// Function to mark notification as read
+// const markAsRead = async (notificationId) => {
+//   try {
+//     const { data, error } = await supabase
+//       .rpc('mark_notification_read', {
+//         notification_id: notificationId,
+//         user_id: user.id
+//       });
+    
+//     if (error) throw error;
+//     // Refresh notifications
+//     fetchNotifications();
+//   } catch (error) {
+//     console.error('Error marking notification as read:', error);
+//   }
+// };
 
   const onRefresh = async () => {
     setRefreshing(true);

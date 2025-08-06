@@ -32,7 +32,7 @@ export default function AuthModal({ visible, onClose, initialMode = 'login', isA
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { signIn, signUp, signInAdmin } = useAuth();
-  const { signIn: adminSignIn } = useAdminAuth();
+  // const { signIn: adminSignIn } = useAdminAuth();
 
   const handleSubmit = async () => {
     if (!email || !password) {

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import ViewShot from 'react-native-view-shot';
-import CameraRoll from '@react-native-community/cameraroll';
+// import CameraRoll from '@react-native-community/cameraroll';
 import { Colors } from '@/constants/Colors';
 import { X, Download, Share, AlertTriangle } from 'lucide-react-native';
 
@@ -144,11 +144,11 @@ export default function TicketModal({ visible, ticket, onClose }: TicketModalPro
         return;
       }
 
-      if (viewShotRef.current) {
-        const uri = await viewShotRef.current.capture();
-        await CameraRoll.save(uri, { type: 'photo' });
-        Alert.alert('Success', 'Ticket saved to photos!');
-      }
+      // if (viewShotRef.current) {
+      //   const uri = await viewShotRef.current.capture();
+      //   await CameraRoll.save(uri, { type: 'photo' });
+      //   Alert.alert('Success', 'Ticket saved to photos!');
+      // }
     } catch (error) {
       console.error('Error saving to photos:', error);
       Alert.alert('Error', 'Failed to save ticket to photos');
