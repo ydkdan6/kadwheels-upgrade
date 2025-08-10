@@ -524,14 +524,14 @@ export function useAuth() {
   };
 
   // Navigation helper functions
-  // const navigateToAdmin = () => {
-  //   try {
-  //     router.push('/admin');
-  //   } catch (error) {
-  //     console.log('Navigation to /admin failed, trying alternative');
-  //     // router.push('/(tab)/admin');
-  //   }
-  // };
+  const navigateToAdmin = () => {
+    try {
+      router.push('/admin');
+    } catch (error) {
+      console.log('Navigation to /admin failed, trying alternative');
+      // router.push('/(tab)/admin');
+    }
+  };
 
   const navigateToHome = () => {
     router.replace('/');

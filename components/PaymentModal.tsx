@@ -526,13 +526,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 10,
   },
   container: {
     backgroundColor: Colors.background,
     borderRadius: 20,
     width: '100%',
-    maxHeight: '90%',
+    maxHeight: '100%',
     overflow: 'hidden',
   },
   header: {
