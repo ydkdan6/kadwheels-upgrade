@@ -37,11 +37,11 @@ export function useAuth() {
     try {
       console.log('Sending welcome notification to:', userId, fullName);
       
-      // const { data, error } = await supabase
-      //   .rpc('send_welcome_notification', {
-      //     user_id: userId,
-      //     user_name: fullName || 'Student'
-      //   });
+      const { data, error } = await supabase
+        .rpc('send_welcome_notification', {
+          user_id: userId,
+          user_name: fullName || 'Student'
+        });
 
       if (error) {
         console.warn('Failed to send welcome notification:', error);
@@ -433,12 +433,12 @@ export function useAuth() {
             setProfile(newProfile);
             
             // Navigate to admin screen
-            if (newAdminStatus) {
-              console.log('Attempting navigation to admin screen');
-              setTimeout(() => {
-                router.push('/admin');
-              }, 100);
-            }
+            // if (newAdminStatus) {
+            //   console.log('Attempting navigation to admin screen');
+            //   setTimeout(() => {
+            //     router.push('/admin');
+            //   }, 100);
+            // }
           } else {
             // User is already admin
             setIsAdmin(currentAdminStatus);
@@ -446,9 +446,9 @@ export function useAuth() {
             
             // Navigate to admin screen
             console.log('User is already admin, navigating...');
-            setTimeout(() => {
-              router.push('/admin');
-            }, 100);
+            // setTimeout(() => {
+            //   router.push('/admin');
+            // }, 100);
           }
         } catch (profileError) {
           console.error('Profile handling failed during admin sign in:', profileError);
@@ -524,14 +524,14 @@ export function useAuth() {
   };
 
   // Navigation helper functions
-  const navigateToAdmin = () => {
-    try {
-      router.push('/admin');
-    } catch (error) {
-      console.log('Navigation to /admin failed, trying alternative');
-      // router.push('/(tab)/admin');
-    }
-  };
+  // const navigateToAdmin = () => {
+  //   try {
+  //     router.push('/admin');
+  //   } catch (error) {
+  //     console.log('Navigation to /admin failed, trying alternative');
+  //     // router.push('/(tab)/admin');
+  //   }
+  // };
 
   const navigateToHome = () => {
     router.replace('/');

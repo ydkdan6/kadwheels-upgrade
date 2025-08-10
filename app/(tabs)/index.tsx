@@ -8,6 +8,7 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
+import { ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '@/constants/Colors';
@@ -215,6 +216,16 @@ export default function HomeScreen() {
         )}
 
         {!user && (
+           <ImageBackground 
+      source={require('../../assets/images/kadwheels1.jpg')} 
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+      }}
+      resizeMode="cover"
+    >
           <View style={styles.authPrompt}>
             <Text style={styles.authPromptTitle}>Get Started</Text>
             <Text style={styles.authPromptText}>
@@ -227,6 +238,7 @@ export default function HomeScreen() {
               <Text style={styles.authPromptButtonText}>Sign In</Text>
             </TouchableOpacity>
           </View>
+           </ImageBackground>
         )}
       </ScrollView>
 
@@ -371,25 +383,28 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     color: Colors.lightGray,
   },
-  authPrompt: {
-    backgroundColor: Colors.cardBackground,
-    marginHorizontal: 20,
-    borderRadius: 12,
-    padding: 20,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.borderColor,
-  },
+ authPrompt: {
+  // backgroundColor: Colors.cardBackground,
+  // opacity: 0.4, 
+  marginHorizontal: 20,
+  borderRadius: 12,
+  padding: 20,
+  alignItems: 'center',
+  borderWidth: 1,
+  borderColor: Colors.success,
+  height: 900,
+},
   authPromptTitle: {
+    opacity: 1, 
     fontSize: 18,
     fontFamily: 'Poppins-Bold',
-    color: Colors.white,
+    color: 'black',
     marginBottom: 8,
   },
   authPromptText: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
-    color: Colors.lightGray,
+    color: 'black',
     textAlign: 'center',
     marginBottom: 16,
   },
